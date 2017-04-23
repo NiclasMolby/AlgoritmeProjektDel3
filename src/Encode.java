@@ -8,8 +8,9 @@ import java.util.Arrays;
  */
 public class Encode {
 
-    int[] byteArray = new int[256];
-    PQ heap = new PQHeap(256);
+    private int[] byteArray = new int[256];
+    private PQ heap = new PQHeap(256);
+    private Dict tree = new DictBinTree();
 
     public static void main(String[] args) {
         new Encode(args);
@@ -36,21 +37,22 @@ public class Encode {
         }
     }
 
-    private synchronized final Element hoffman() {
+    private Element hoffman() {
         int size = byteArray.length;
         initializePQ();
 
         for (int i = 0; i < size; i++) {
-            DictBinTree newNode = new DictBinTree();
-            int leftChildFreq = heap.extractMin().key;
-            int rightChildFreq = heap.extractMin().key;
+            Node newTreeNode = new Node();
 
-            newNode.insert(leftChildFreq);
-            newNode.insert(rightChildFreq);
+            Element leftChild = heap.extractMin();
+            Element rightChild = heap.extractMin();
 
-            newNode.setFreq(leftChildFreq+rightChildFreq);
+            newTreeNode.setLeftChild((Node) leftChild.data);
+            newTreeNode.setRightChild((Node) rightChild.data);
 
-            heap.insert(new Element(leftChildFreq+rightChildFreq, newNode));
+            newTreeNode.setKey(leftChild.key+rightChild.key);
+
+            heap.insert(new Element(newTreeNode.getKey(), newTreeNode));
 
 
 
@@ -61,9 +63,9 @@ public class Encode {
     private void initializePQ() {
         for (int i = 0; i < byteArray.length; i++) {
             System.out.println(byteArray.length);
-                Dict tree = new DictBinTree();
-                tree.insert(i);
-                heap.insert(new Element(byteArray[i], tree));
+                Node newNode = new Node();
+                newNode.setKey(i);
+                heap.insert(new Element(byteArray[i], newNode));
 
         }
     }
