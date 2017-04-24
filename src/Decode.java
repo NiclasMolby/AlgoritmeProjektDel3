@@ -7,7 +7,6 @@ import java.io.IOException;
  */
 public class Decode {
     private int[] freqArray = new int[256];
-    private String[] codewordArray = new String[256];
     private PQ heap = new PQHeap(256);
     private Node root;
     private int totalBytes = 0;
@@ -18,29 +17,33 @@ public class Decode {
 
             for(int i = 0; i < freqArray.length; i++) {
                 int bytes = in.readInt();
+                //System.out.println(bytes);
                 freqArray[i] = bytes;
                 totalBytes += bytes;
             }
 
             root = (Node) huffman().data;
+            System.out.println(root.getRightChild().getRightChild().getLeftChild().getRightChild().getRightChild().getByteValue());
+            //System.out.println(totalBytes);
             Node temp = root;
             int bytesRead = 0;
 
             int bit;
             while ((bit = in.readBit()) != -1 && bytesRead != totalBytes) {
+                System.out.print(bit);
                 if(temp.isLeaf()) {
-                    System.out.println(temp.getByteValue());
+                    System.out.println(" "+temp.getByteValue());
                     temp = root;
                     bytesRead++;
                 }
-                else {
-                    if (bit == 0) {
-                        temp = root.getLeftChild();
-                    } else if (bit == 1) {
-                        temp = root.getRightChild();
-                    }
+                else if (bit == 0) {
+                        temp = temp.getLeftChild();
+                }
+                else if (bit == 1) {
+                        temp = temp.getRightChild();
                 }
             }
+
 
         } catch (IOException e) {
             e.printStackTrace();

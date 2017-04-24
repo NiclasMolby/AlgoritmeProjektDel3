@@ -16,6 +16,7 @@ public class Encode {
         try {
             //BitInputStream in = new BitInputStream(new FileInputStream(args[0]));
             FileInputStream file = new FileInputStream(args[0]);
+            FileInputStream file2 = new FileInputStream(args[0]);
             BitOutputStream out = new BitOutputStream(new FileOutputStream("out.txt"));
 
             int bytes;
@@ -24,8 +25,8 @@ public class Encode {
             }
 
             tree.setRoot((Node) hoffman().data);
-            //Node temp = tree.getRoot().getRightChild().getRightChild().getLeftChild();
-            //System.out.println("Value: " + temp.getByteValue() + " // Freq: " + temp.getFreq());
+            Node temp = tree.getRoot().getRightChild().getLeftChild();
+            System.out.println("Value: " + temp.getByteValue() + " // ");
             encodeHoffmanTree();
 
             for(int byteFreq : byteArray) {
@@ -33,11 +34,14 @@ public class Encode {
             }
 
             int bytes2;
-            while ((bytes2 = file.read()) != -1) {
-                String[] codeCharArray = codewordArray[bytes2].split("");
-                for (String c : codeCharArray) {
-
+            while ((bytes2 = file2.read()) != -1) {
+                String codeCharArray = codewordArray[bytes2];
+                String[] codeCharArray2 = codewordArray[bytes2].split("");
+                System.out.println(codeCharArray + " " + bytes2);
+                //System.out.println(codeCharArray);
+                for (String c : codeCharArray2) {
                     out.writeBit(Integer.valueOf(c));
+                    //System.out.println(c);
                 }
             }
 
