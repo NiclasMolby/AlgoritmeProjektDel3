@@ -1,5 +1,5 @@
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 /**
@@ -11,38 +11,40 @@ public class Decode {
     private Node root;
     private int totalBytes = 0;
 
-    public Decode() {
+    public Decode(String[] args) {
         try {
-            BitInputStream in = new BitInputStream(new FileInputStream("out.txt"));
+            BitInputStream in = new BitInputStream(new FileInputStream("out"));
+            FileOutputStream out = new FileOutputStream(args[0]);
 
             for(int i = 0; i < freqArray.length; i++) {
                 int bytes = in.readInt();
-                //System.out.println(bytes);
                 freqArray[i] = bytes;
                 totalBytes += bytes;
             }
 
             root = (Node) huffman().data;
-            System.out.println(root.getRightChild().getRightChild().getLeftChild().getRightChild().getRightChild().getByteValue());
-            //System.out.println(totalBytes);
+
             Node temp = root;
             int bytesRead = 0;
 
             int bit;
-            while ((bit = in.readBit()) != -1 && bytesRead != totalBytes) {
-                System.out.print(bit);
+            while (bytesRead != totalBytes) {
                 if(temp.isLeaf()) {
                     System.out.println(" "+temp.getByteValue());
+                    out.write(temp.getByteValue());
                     temp = root;
                     bytesRead++;
                 }
-                else if (bit == 0) {
+                else {
+                    bit = in.readBit();
+                    if (bit == 0) {
                         temp = temp.getLeftChild();
-                }
-                else if (bit == 1) {
+                    } else if (bit == 1) {
                         temp = temp.getRightChild();
+                    }
                 }
             }
+
 
 
         } catch (IOException e) {
@@ -51,7 +53,7 @@ public class Decode {
     }
 
     public static void main(String[] args) {
-        new Decode();
+        new Decode(args);
     }
 
     private Element huffman() {

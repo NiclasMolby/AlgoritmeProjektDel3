@@ -11,23 +11,30 @@ public class Encode {
     private String[] codewordArray = new String[256];
     private PQ heap = new PQHeap(256);
     private DictBinTree tree = new DictBinTree();
+    private long time;
 
     public Encode(String[] args) {
         try {
+            time = System.currentTimeMillis();
             //BitInputStream in = new BitInputStream(new FileInputStream(args[0]));
             FileInputStream file = new FileInputStream(args[0]);
             FileInputStream file2 = new FileInputStream(args[0]);
-            BitOutputStream out = new BitOutputStream(new FileOutputStream("out.txt"));
+            BitOutputStream out = new BitOutputStream(new FileOutputStream("out"));
 
             int bytes;
             while ((bytes = file.read()) != -1) {
                 byteArray[bytes]++;
             }
+            System.out.println("Byte array genereated in: " + (System.currentTimeMillis()-time));
 
             tree.setRoot((Node) hoffman().data);
+            System.out.println("Huffman tree generated in: " + (System.currentTimeMillis()-time));
+
             Node temp = tree.getRoot().getRightChild().getLeftChild();
-            System.out.println("Value: " + temp.getByteValue() + " // ");
+            //System.out.println("Value: " + temp.getByteValue() + " // ");
             encodeHoffmanTree();
+            System.out.println("Tree encoded in: " + (System.currentTimeMillis()-time));
+
 
             for(int byteFreq : byteArray) {
                 out.writeInt(byteFreq);
@@ -37,7 +44,7 @@ public class Encode {
             while ((bytes2 = file2.read()) != -1) {
                 String codeCharArray = codewordArray[bytes2];
                 String[] codeCharArray2 = codewordArray[bytes2].split("");
-                System.out.println(codeCharArray + " " + bytes2);
+                //System.out.println(bytes2);
                 //System.out.println(codeCharArray);
                 for (String c : codeCharArray2) {
                     out.writeBit(Integer.valueOf(c));
@@ -48,7 +55,7 @@ public class Encode {
             out.writeBit(0);
             out.writeBit(1);
             out.close();
-
+            System.out.println("Output file written in: " + (System.currentTimeMillis()-time));
 
         } catch (IOException e) {
             e.printStackTrace();
