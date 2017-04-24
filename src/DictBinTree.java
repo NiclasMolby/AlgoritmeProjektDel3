@@ -15,54 +15,44 @@ public class DictBinTree implements Dict {
 
     }
 
-    /**
-     *
-     * @param k værdien der skal indsættes i træet
-     */
-    public void insert(int k) {
-        Node currentNode = null;
-        Node rootNode = root;
-        Node newNode = new Node();
-        newNode.setKey(k);
-        newNode.setLeftChild(null);
-        newNode.setRightChild(null);
-
-        // Så længe at den nuværende rod ikke er null, køres følgende while-loop:
-        while(rootNode != null){
-            currentNode = rootNode;
-			/*
-			Hvis værdien af det nye element k, er mindre end den nuværende rods værdi,
-			sættes den nuværende rod til at være sit venstre barn. Ellers sættes den
-			til at være det højre barn.
-			*/
-            if(newNode.getKey() < rootNode.getKey()) {
-                rootNode = rootNode.getLeftChild();
-            }
-            else {
-                rootNode = rootNode.getRightChild();
-            }
-        }
-		/*
-		Hvis den nuværende node er null når vi kommer ud af while-loopet, betyder det at
-		den nye værdi skal indsættes her. Ellers hvis værdien af den nye node er mindre end
-		værdien af den nuværende node, sættes den nye node til at være den nuværende nodes
-		venstre barn. Hvis ingen af disse ting er tilfældet, sættes den til at være det højre barn.
-		*/
-        if(currentNode == null) {
-            root = newNode;
-        }
-        else if(newNode.getKey() < currentNode.getKey()) {
-            currentNode.setLeftChild(newNode);
-        }
-        else {
-            currentNode.setRightChild(newNode);
-        }
-
-        size++;
+    public void setRoot(Node root) {
+        this.root = root;
     }
 
-    public void setFreq(int freq) {
-        root.setKey(freq);
+    public Node getRoot() {
+        return root;
+    }
+
+    public void printPathsRecur(Node node, int path[], int pathLen)
+    {
+        if (node == null)
+            return;
+
+        /* append this node to the path array */
+        path[pathLen] = node.getByteValue();
+        pathLen++;
+
+        /* it's a leaf, so print the path that led to here  */
+        if (node.getLeftChild() == null && node.getRightChild() == null){
+            printArray(path, pathLen);
+        }
+
+        else
+        {
+            /* otherwise try both subtrees */
+            printPathsRecur(node.getLeftChild(), path, pathLen);
+            printPathsRecur(node.getRightChild(), path, pathLen);
+        }
+    }
+
+    public void printArray(int ints[], int len)
+    {
+        int i;
+        for (i = 0; i < len; i++)
+        {
+            System.out.print(ints[i] + " ");
+        }
+        System.out.println("");
     }
 
     /**
@@ -85,45 +75,11 @@ public class DictBinTree implements Dict {
     private void inOrderTreeWalk(Node n){
         if(n != null) {
             inOrderTreeWalk(n.getLeftChild());
-            orderedArray[pointer] = n.getKey();
+            orderedArray[pointer] = n.getByteValue();
             pointer++;
             inOrderTreeWalk(n.getRightChild());
         }
     }
 
-    /**
-     *
-     * @param k elementet der søges efter (et heltal)
-     * @return returnerer true hvis k blev fundet i træet, ellers returneres false.
-     */
-    public boolean search(int k) {
-        Node current = root;
-		/*
-		Så længe den nuværende rod ikke er null og den nuværende rods key-værdi ikke er
-		den vi leder efter, køres følgende while-loop:
-		*/
-        while(current != null && current.getKey() != k) {
-			/*
-			Hvis k er mindre end den nuværende rods key-værdi, sættes den nuværende rod
-			til at være sit venstre barn. Ellers sættes den til at være det højre barn.
-			*/
-            if (k < current.getKey()) {
-                current = current.getLeftChild();
-            }
-            else {
-                current = current.getRightChild();
-            }
-        }
 
-		/*
-		Hvis den nuværende rod ikke er null og den nuværende rods key-værdi er
-		den vi leder efter, returneres true. Ellers returneres false,
-		da værdien k så ikke findes i træet.
-		*/
-        if(current != null && current.getKey() == k) {
-            return true;
-        }
-
-        return false;
-    }
 }

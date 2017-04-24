@@ -19,7 +19,7 @@ public class PQHeap implements PQ {
 
     /**
      *
-     * @return returnerer det element der har den mindste key værdi
+     * @return returnerer det element der har den mindste frequency værdi
      */
     @Override
     public Element extractMin() {
@@ -40,21 +40,21 @@ public class PQHeap implements PQ {
         int right = getRightChild(i);
         int min;
 
-        // Tjekker om den nuværende positions venstre barn har en mindre key værdi
-        if(left < elements.size() && elements.get(left).key < elements.get(i).key){
+        // Tjekker om den nuværende positions venstre barn har en mindre frequency værdi
+        if(left < elements.size() && elements.get(left).frequency < elements.get(i).frequency){
             min = left;
         }
         else {
             min = i;
         }
 
-        // Tjekker om den nuværene positions højre barn har en mindre key værdi
-        if(right < elements.size() && elements.get(right).key < elements.get(min).key) {
+        // Tjekker om den nuværene positions højre barn har en mindre frequency værdi
+        if(right < elements.size() && elements.get(right).frequency < elements.get(min).frequency) {
             min = right;
         }
 
         /*
-            Tjekker om forældren har den mindste key værdi
+            Tjekker om forældren har den mindste frequency værdi
             hvis ikke skal den byttes ud med den midnste værdi og heapify skal køres igen
         */
         if(min != i){
@@ -71,10 +71,15 @@ public class PQHeap implements PQ {
     public void insert(Element e) {
         elements.add(e);
         int i = elements.size() - 1;
-        while(i > 1 && elements.get(getParent(i)).key > e.key){
+        while(i > 1 && elements.get(getParent(i)).frequency > e.frequency){
             Collections.swap(elements, i, getParent(i));
             i = getParent(i);
         }
+    }
+
+    @Override
+    public int getSize() {
+        return elements.size();
     }
 
     /**

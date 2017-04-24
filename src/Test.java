@@ -13,7 +13,7 @@ import java.io.FileOutputStream;
 // behaviour).
 
 public class Test {
-    public static void main(String[] args) throws Exception {
+    public void main(String[] args) throws Exception {
 
         // Open input and output byte streams to/from files.
         FileInputStream inFile = new FileInputStream(args[0]);

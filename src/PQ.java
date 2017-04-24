@@ -4,4 +4,5 @@
 public interface PQ {
     Element extractMin();
     void insert(Element e);
+    int getSize();
 }

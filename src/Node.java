@@ -6,9 +6,9 @@
  */
 public class Node {
 
-    private Node LeftChild;
-    private Node rightChild;
-    private int key;
+    private Node LeftChild = null;
+    private Node rightChild = null;
+    private int byteValue;
 
     public Node getLeftChild() {
         return LeftChild;
@@ -26,11 +26,15 @@ public class Node {
         this.rightChild = rightChild;
     }
 
-    public int getKey() {
-        return key;
+    public int getByteValue() {
+        return byteValue;
     }
 
-    public void setKey(int key) {
-        this.key = key;
+    public void setByteValue(int byteValue) {
+        this.byteValue = byteValue;
+    }
+
+    public boolean isLeaf() {
+        return getLeftChild() == null && getRightChild() == null;
     }
 }
