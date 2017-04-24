@@ -28,6 +28,11 @@ public class Encode {
             //System.out.println("Value: " + temp.getByteValue() + " // Freq: " + temp.getFreq());
             encodeHoffmanTree();
 
+            for(int byteFreq : byteArray) {
+                out.writeInt(byteFreq);
+            }
+
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -66,7 +71,7 @@ public class Encode {
             hoffmanTreeWalk(n.getRightChild(), pathSoFar, "1");
             if(n.isLeaf()) {
                 codewordArray[n.getByteValue()] = pathSoFar;
-                System.out.println(n.getByteValue() + " " + pathSoFar);
+                //System.out.println(n.getByteValue() + " " + pathSoFar);
             }
         }
     }
