@@ -32,6 +32,19 @@ public class Encode {
                 out.writeInt(byteFreq);
             }
 
+            int bytes2;
+            while ((bytes2 = file.read()) != -1) {
+                String[] codeCharArray = codewordArray[bytes2].split("");
+                for (String c : codeCharArray) {
+
+                    out.writeBit(Integer.valueOf(c));
+                }
+            }
+
+            out.writeBit(0);
+            out.writeBit(1);
+            out.close();
+
 
         } catch (IOException e) {
             e.printStackTrace();
