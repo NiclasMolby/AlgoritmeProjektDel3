@@ -7,9 +7,6 @@
 public class DictBinTree implements Dict {
 
     private Node root = null;
-    private int size = 0;
-    private int pointer;
-    private int[] orderedArray;
 
     public DictBinTree() {
 
@@ -23,63 +20,20 @@ public class DictBinTree implements Dict {
         return root;
     }
 
-    public void printPathsRecur(Node node, int path[], int pathLen)
-    {
-        if (node == null)
-            return;
+    public void generateHuffmanTree(PQ heap, int length) {
+        for (int i = 0; i < length-1; i++) {
+            Node newTreeNode = new Node();
 
-        /* append this node to the path array */
-        path[pathLen] = node.getByteValue();
-        pathLen++;
+            Element leftChild = heap.extractMin();
+            Element rightChild = heap.extractMin();
 
-        /* it's a leaf, so print the path that led to here  */
-        if (node.getLeftChild() == null && node.getRightChild() == null){
-            printArray(path, pathLen);
+            newTreeNode.setLeftChild((Node) leftChild.data);
+            newTreeNode.setRightChild((Node) rightChild.data);
+
+            heap.insert(new Element(leftChild.frequency + rightChild.frequency, newTreeNode));
         }
 
-        else
-        {
-            /* otherwise try both subtrees */
-            printPathsRecur(node.getLeftChild(), path, pathLen);
-            printPathsRecur(node.getRightChild(), path, pathLen);
-        }
+        root = (Node) heap.extractMin().data;
     }
-
-    public void printArray(int ints[], int len)
-    {
-        int i;
-        for (i = 0; i < len; i++)
-        {
-            System.out.print(ints[i] + " ");
-        }
-        System.out.println("");
-    }
-
-    /**
-     *
-     * @return returnerer et ordnet array af træets værdier.
-     */
-    public int[] orderedTraversal() {
-        orderedArray = new int[size];
-        pointer = 0;
-        inOrderTreeWalk(root);
-
-        return orderedArray;
-    }
-
-    /**
-     * Rekursiv funktion, der først ordner det venstre undertræ,
-     * dernæst det højre.
-     * @param n elementet der der startes fra
-     */
-    private void inOrderTreeWalk(Node n){
-        if(n != null) {
-            inOrderTreeWalk(n.getLeftChild());
-            orderedArray[pointer] = n.getByteValue();
-            pointer++;
-            inOrderTreeWalk(n.getRightChild());
-        }
-    }
-
 
 }

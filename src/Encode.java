@@ -11,51 +11,17 @@ public class Encode {
     private String[] codewordArray = new String[256];
     private PQ heap = new PQHeap(256);
     private DictBinTree tree = new DictBinTree();
-    private long time;
 
     public Encode(String[] args) {
         try {
-            time = System.currentTimeMillis();
-            //BitInputStream in = new BitInputStream(new FileInputStream(args[0]));
-            FileInputStream file = new FileInputStream(args[0]);
-            FileInputStream file2 = new FileInputStream(args[0]);
-            BitOutputStream out = new BitOutputStream(new FileOutputStream("out"));
+            scanInputBytesForFrequency(args[0]);
 
-            int bytes;
-            while ((bytes = file.read()) != -1) {
-                byteArray[bytes]++;
-            }
-            System.out.println("Byte array genereated in: " + (System.currentTimeMillis()-time));
+            initializePQ();
+            tree.generateHuffmanTree(heap, byteArray.length);
 
-            tree.setRoot((Node) hoffman().data);
-            System.out.println("Huffman tree generated in: " + (System.currentTimeMillis()-time));
+            encodeHuffmanTree();
 
-            Node temp = tree.getRoot().getRightChild().getLeftChild();
-            //System.out.println("Value: " + temp.getByteValue() + " // ");
-            encodeHoffmanTree();
-            System.out.println("Tree encoded in: " + (System.currentTimeMillis()-time));
-
-
-            for(int byteFreq : byteArray) {
-                out.writeInt(byteFreq);
-            }
-
-            int bytes2;
-            while ((bytes2 = file2.read()) != -1) {
-                String codeCharArray = codewordArray[bytes2];
-                String[] codeCharArray2 = codewordArray[bytes2].split("");
-                //System.out.println(bytes2);
-                //System.out.println(codeCharArray);
-                for (String c : codeCharArray2) {
-                    out.writeBit(Integer.valueOf(c));
-                    //System.out.println(c);
-                }
-            }
-
-            out.writeBit(0);
-            out.writeBit(1);
-            out.close();
-            System.out.println("Output file written in: " + (System.currentTimeMillis()-time));
+            writeCodeToOutput(args[0], args[1]);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -66,40 +32,50 @@ public class Encode {
         new Encode(args);
     }
 
-
-    private Element hoffman() {
-        initializePQ();
-
-        for (int i = 0; i < byteArray.length-1; i++) {
-            Node newTreeNode = new Node();
-
-            Element leftChild = heap.extractMin();
-            Element rightChild = heap.extractMin();
-
-            newTreeNode.setLeftChild((Node) leftChild.data);
-            newTreeNode.setRightChild((Node) rightChild.data);
-
-            heap.insert(new Element(leftChild.frequency + rightChild.frequency, newTreeNode));
+    private void scanInputBytesForFrequency(String args) throws IOException {
+        FileInputStream firstScan = new FileInputStream(args);
+        int firstByteScan;
+        while ((firstByteScan = firstScan.read()) != -1) {
+            byteArray[firstByteScan]++;
         }
-        return heap.extractMin();
     }
 
-    private void encodeHoffmanTree() {
-        hoffmanTreeWalk(tree.getRoot(), "", "");
+    private void writeCodeToOutput(String input, String output) throws IOException {
+        FileInputStream secondScan = new FileInputStream(input);
+        BitOutputStream out = new BitOutputStream(new FileOutputStream(output));
+
+        for(int byteFreq : byteArray) {
+            out.writeInt(byteFreq);
+        }
+
+        int secondByteScan;
+        while ((secondByteScan = secondScan.read()) != -1) {
+            String[] codeCharArray = codewordArray[secondByteScan].split("");
+            for (String c : codeCharArray) {
+                out.writeBit(Integer.valueOf(c));
+            }
+        }
+
+        out.writeBit(0);
+        out.writeBit(1);
+        out.close();
     }
 
-    private void hoffmanTreeWalk(Node n, String pathSoFar, String childDirection){
+    private void encodeHuffmanTree() {
+        huffmanTreeWalk(tree.getRoot(), "", "");
+    }
+
+    private void huffmanTreeWalk(Node n, String pathSoFar, String childDirection) {
+        String[] codewordArray = new String[256];
         if(n != null) {
             pathSoFar = pathSoFar+childDirection;
-            hoffmanTreeWalk(n.getLeftChild(), pathSoFar, "0");
-            hoffmanTreeWalk(n.getRightChild(), pathSoFar, "1");
+            huffmanTreeWalk(n.getLeftChild(), pathSoFar, "0");
+            huffmanTreeWalk(n.getRightChild(), pathSoFar, "1");
             if(n.isLeaf()) {
                 codewordArray[n.getByteValue()] = pathSoFar;
-                //System.out.println(n.getByteValue() + " " + pathSoFar);
             }
         }
     }
-
 
     private void initializePQ() {
         for (int i = 0; i < byteArray.length; i++) {

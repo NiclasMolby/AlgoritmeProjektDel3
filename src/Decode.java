@@ -8,44 +8,22 @@ import java.io.IOException;
 public class Decode {
     private int[] freqArray = new int[256];
     private PQ heap = new PQHeap(256);
-    private Node root;
+    private DictBinTree tree = new DictBinTree();
     private int totalBytes = 0;
+    private BitInputStream in;
+    private FileOutputStream out;
 
     public Decode(String[] args) {
         try {
-            BitInputStream in = new BitInputStream(new FileInputStream("out"));
-            FileOutputStream out = new FileOutputStream(args[0]);
+            out = new FileOutputStream(args[0]);
+            in = new BitInputStream(new FileInputStream(args[1]));
 
-            for(int i = 0; i < freqArray.length; i++) {
-                int bytes = in.readInt();
-                freqArray[i] = bytes;
-                totalBytes += bytes;
-            }
+            readFrequencyBytes();
 
-            root = (Node) huffman().data;
+            initializePQ();
+            tree.generateHuffmanTree(heap, freqArray.length);
 
-            Node temp = root;
-            int bytesRead = 0;
-
-            int bit;
-            while (bytesRead != totalBytes) {
-                if(temp.isLeaf()) {
-                    System.out.println(" "+temp.getByteValue());
-                    out.write(temp.getByteValue());
-                    temp = root;
-                    bytesRead++;
-                }
-                else {
-                    bit = in.readBit();
-                    if (bit == 0) {
-                        temp = temp.getLeftChild();
-                    } else if (bit == 1) {
-                        temp = temp.getRightChild();
-                    }
-                }
-            }
-
-
+            decodeHuffman();
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -56,25 +34,35 @@ public class Decode {
         new Decode(args);
     }
 
-    private Element huffman() {
-        initializePQ();
-
-        for (int i = 0; i < freqArray.length-1; i++) {
-            Node newTreeNode = new Node();
-
-            Element leftChild = heap.extractMin();
-            Element rightChild = heap.extractMin();
-
-            newTreeNode.setLeftChild((Node) leftChild.data);
-            newTreeNode.setRightChild((Node) rightChild.data);
-
-            heap.insert(new Element(leftChild.frequency + rightChild.frequency, newTreeNode));
+    private void readFrequencyBytes() throws IOException {
+        for(int i = 0; i < freqArray.length; i++) {
+            int bytes = in.readInt();
+            freqArray[i] = bytes;
+            totalBytes += bytes;
         }
-        return heap.extractMin();
     }
 
-    private void decodeHuffman() {
+    private void decodeHuffman() throws IOException {
+        Node temp = tree.getRoot();
+        int bytesRead = 0;
 
+        int bit;
+        while (bytesRead != totalBytes) {
+            if(temp.isLeaf()) {
+                System.out.println(" "+temp.getByteValue());
+                out.write(temp.getByteValue());
+                temp = tree.getRoot();
+                bytesRead++;
+            }
+            else {
+                bit = in.readBit();
+                if (bit == 0) {
+                    temp = temp.getLeftChild();
+                } else if (bit == 1) {
+                    temp = temp.getRightChild();
+                }
+            }
+        }
     }
 
     private void initializePQ() {
