@@ -1,5 +1,8 @@
 /**
- * Created by niclasmolby on 28/02/2017.
+ * Medlemmer:
+ * Niclas Schilling Mølby: nicmo15
+ * Jebisan Nadarajah: jenad14
+ * Emil Villefrance: emvil15
  */
 public class Element {
     public int frequency;
